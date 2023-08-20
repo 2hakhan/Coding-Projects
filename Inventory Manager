@@ -1,0 +1,472 @@
+//InvInq.cpp
+//Tuaha Khan, CISP 400
+//3/13/2022
+
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <cctype>
+#include <cstdlib>
+#include <limits>
+
+using namespace std;
+
+//Date class
+class Date{
+  private:
+  int day, //day for date methods
+  month, //month for date methods
+  year; //year for date methods
+
+  public:
+  void currentDate();
+  void setTodaysDate(int, int, int); //allows date to be set
+  void displayDate(); //displays date
+  void componentTest(); //date tester
+  string dateToString(); 
+  int showDay();
+  int showMonth();
+  int showYear();
+
+  friend ostream &operator << (ostream &out, Date d);
+  friend istream &operator >> (istream &in, Date &d);
+  
+};
+//Overload operator«
+ostream &operator << (ostream& out, Date d){
+  out << "Day: " << d.showDay() << endl;
+  out << "Month: " << d.showMonth() << endl;
+  out << "Year: " << d.showYear() << endl;
+  out << "Date: ";
+  d.displayDate(); cout << endl;
+  return out;
+}
+//Overload operator»
+istream &operator >> (istream &in, Date &d){
+  int month, day, year;
+  cout << "Enter Day: " << endl;
+  in >> day;
+  cout << "Enter Month: " << endl;
+  in >> month;
+  cout << "Enter Year: " << endl;
+  in >> year;
+  d.setTodaysDate(month, day, year);
+  return in;
+}
+
+void Date::currentDate(){
+  time_t ti = time(NULL);
+  tm* currentTime = localtime(&ti);
+  int todaysMonth = (currentTime->tm_mon)+1; //current month in system
+  int todaysDay = (currentTime->tm_mday); //current day in system
+  int todaysYear = (currentTime->tm_year)+1900; //current year in system
+  setTodaysDate(todaysMonth, todaysDay, todaysYear);
+  displayDate();
+}
+
+class Item{
+  private:
+  int id; //item id
+  double quant; //quantity for item
+  double cost; //wholesale cost for item
+  double retailCost; //retail cost for item
+
+  public:
+  void setItemId(int); 
+  void setItemQuant(double);
+  void setItemCost(double);
+  void setItemRetail(double);
+  
+  int displayItemId();
+  double displayItemQuant();
+  double displayItemCost();
+  double displayItemRetail();
+  void componentTest();
+
+
+};
+
+void Item::setItemId(int i){
+  id = i;
+}
+void Item::setItemQuant(double q){
+  quant = q;
+}
+void Item::setItemCost(double c){
+  cost = c;
+}
+void Item::setItemRetail(double r){
+  if(cost == retailCost){
+    retailCost =  r * 2; //sets retail cost of item to 100% wholesale price
+  } 
+  else{
+    retailCost = r; 
+  }
+}
+int Item::displayItemId(){
+  return id;
+}
+double Item::displayItemQuant(){
+  return quant;
+}
+double Item::displayItemCost(){
+  return cost;
+}
+double Item::displayItemRetail(){
+  return retailCost;
+}
+
+int Date::showDay(){
+  return day;
+}
+
+int Date::showMonth(){
+  return month;
+}
+
+int Date::showYear(){
+  return year;
+}
+//date function to set date
+void Date::setTodaysDate(int m, int d, int y){ 
+  month = m;
+  day = d;
+  year = y;
+}
+//date function that displays date
+void Date::displayDate(){ 
+  cout << month << "/" << day << "/" << year << endl;
+}
+//converts month, day, and year for comparison for date tests
+string Date::dateToString(){
+  string stringDate = to_string(month) + "/" + to_string(day) + "/" + to_string(year);
+  return stringDate;
+}
+
+void Item::componentTest(){
+  Item t1;
+
+  t1.setItemId(12345);
+  t1.setItemCost(5);
+  t1.setItemQuant(6);
+
+  cout << "Item Tests: " << endl;
+  if (t1.displayItemId() == 12345){
+    cout << "ID test passed!" << endl;
+  }
+  else{
+    cout << "ID tets failed!" << endl;
+  }
+
+  if(t1.displayItemCost() ==  5){
+    cout << "Wholesale cost test passed!" << endl;
+  }
+  else{
+    cout << "Wholesale cost test failed!" << endl;
+  }
+
+  if(t1.displayItemQuant() == 6){
+    cout << "Quantity test passed!\n" << endl;
+  }
+  else{
+    cout << "Quantity test failed!\n" << endl;
+  }
+
+}
+
+//ComponentTest method in Date
+void Date::componentTest(){
+
+  time_t ti = time(NULL);
+  tm* currentTime = localtime(&ti);
+  
+  Date t1;
+  t1.setTodaysDate(1,17,1777);
+
+  cout << "Date Test #1: " << endl;
+  if(t1.dateToString() == "1/17/1777"){
+    cout << "Test #1 Passed!" << endl;
+  }
+  else{
+    cout << "Test #1 Failed!" << endl;
+  }
+  int tm = (currentTime->tm_mon)+1;
+  int td = (currentTime->tm_mday);
+  int ty = (currentTime->tm_year)+1900;
+
+  Date t2;
+  t2.setTodaysDate(tm,td,ty);
+  
+  cout << "Date Test #2: " << endl;
+  if(t2.dateToString() == "8/20/2023"){ //enter current date to test
+    cout << "Test #2 Passed!" << endl;
+  }
+  else{
+    cout << "Test #2 Failed!" << endl;
+  }
+}
+
+double quantCheck();
+double costCheck();
+void menu();
+void unitTest(Date d, Item i);
+void programGreeting();
+int idCheck();
+
+int main() {
+  int size = 0; //size of inv array
+  int inputID; //int for item ID
+  double inputCost; //cost input by user
+  double inputQuant; //quantity input by user
+  int itemIndex; //index for array edits
+  double retailCost; //item retail cost
+  char choice; //user menu choice
+  bool validInput;
+  bool running = true; //loop runs until false
+  // Specification C2 - Dynamic Array
+  Item *tempArr = nullptr;
+  Item *inv = new Item[size];
+
+  Date d;
+  Item i;
+
+  programGreeting();
+
+  unitTest(d,i);
+
+  d.currentDate();
+  
+  d.setTodaysDate(9,99,99);
+
+  
+while (running){
+    
+  menu();
+  cin >> choice;
+  validInput = true; //loops while user input is valid
+  //Menu Input Validation  
+  while(validInput){
+    //allows only first letter to be input
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+    
+    if(choice == 'A' || choice == 'a'){
+      //Dynamic Array
+      size++;
+
+      inputID = idCheck(); //validates user input ID
+      inputCost = costCheck(); //validates user input cost
+      inputQuant = quantCheck(); //validates user input quantity
+      
+      double retailCost = inputCost * 2;
+
+      tempArr = new Item[size]; //creates temporary array 
+
+      for(int i = 0; i < size; i++){
+        tempArr[i] = inv[i]; //puts contents of inv to temp array
+      }
+      //sets id, quantity, and costs into temporary array
+      tempArr[size-1].setItemId(inputID); 
+      tempArr[size-1].setItemQuant(inputQuant);
+      tempArr[size-1].setItemCost(inputCost);
+      tempArr[size-1].setItemRetail(retailCost);
+
+      delete[] inv; //delets inv array
+      inv = tempArr; //puts contents of temp array back to inv array
+      tempArr = nullptr; 
+      
+      validInput = false; //ends loop
+      
+    }
+    else if (choice == 'D' || choice == 'd'){
+      //Resize Array - subtract from end
+      size--;
+
+      tempArr = new Item[size];
+      
+      for(int i = 0; i < size; i++){ 
+        tempArr[i] = inv[i]; //sets contents of inv to temparr again excluding last                               element
+      }
+
+      delete[] inv;
+      inv = tempArr;
+      tempArr = nullptr;
+
+      cout << "Last item in inventory deleted." << endl;
+      
+      validInput = false; //ends loop
+    } 
+    //Edit Inventory
+    else if (choice == 'E' || choice == 'e'){
+      cout << "Enter index of item you would like to edit: " << endl;
+      
+      cin >> itemIndex; //user inputs index of item
+    
+      bool validCheck = true;
+      //Inventory Entry Input Validation
+      while(validCheck){
+        if(cin.fail()){
+          cout << "Please use valid input." << endl;
+          cin.clear();
+          cin.ignore();
+          cin >> itemIndex;
+        }
+        else if(itemIndex < 0){ //checks that user inputs non negative int
+          cout << "Index number not found." << endl;
+          cin >> itemIndex;
+        }
+        else if(size > itemIndex && itemIndex >= 0){ //checks that index exists in                                                        //array
+          validCheck = false;
+        }
+        else{
+          cout << "Index Number not found." << endl;
+          cin.clear();
+          cin.ignore();
+          cin >> itemIndex;
+        }
+      }
+      inputID = idCheck();
+      inputCost = costCheck();
+      inputQuant = quantCheck();
+      
+      double retailCost = inputCost * 2;
+      //replaces enw item id, quantity and costs at user-entered index
+      inv[itemIndex].setItemId(inputID); 
+      inv[itemIndex].setItemQuant(inputQuant);
+      inv[itemIndex].setItemCost(inputCost);
+      inv[itemIndex].setItemRetail(retailCost);
+      
+      validInput = false; //ends loop
+      
+    } 
+    else if (choice == 'S' || choice == 's'){
+            
+      for (int i = 0; i < size; i++){
+        cout << "Index: " << i << endl; //displays item index
+        cout << "Item ID: " << inv[i].displayItemId() << endl; //displays item id
+        cout << "Quantity: " << inv[i].displayItemQuant() << endl; //display quantity
+        cout << "Wholesale Cost: " << inv[i].displayItemCost() << endl; //displays cost
+        cout << "Retail Cost: " << inv[i].displayItemRetail() << endl; //displays retail
+        cout << "Item Date: "; //displays item date
+        d.displayDate(); cout << endl << endl; 
+        
+      }
+      validInput = false; //ends loop
+    }
+    else if(choice == 'Q' || choice == 'q'){
+      cout << "Goodbye!" << endl;
+      return 0; //exits program
+    }
+    else{
+      cout <<"Please choose from one of the options." << endl;
+      cin >> choice;
+    }
+  } 
+  }
+}
+//Alpha Menu
+void menu(){
+  cout << "<A>dd Inventory\n<D>elete Inventory\n<E>dit Inventory\n<S>how Inventory\n<Q>uit Program" << endl;
+}
+
+void unitTest(Date d, Item i){
+  d.componentTest();
+  i.componentTest();
+}
+
+double quantCheck(){
+  double quant;
+  cout << "Quantity: " << endl;
+  cin >> quant;
+  bool validQuant = true; //loops until false
+  
+  while (validQuant){
+    if (cin.fail()){
+      cout << "Please use valid input." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> quant;
+    }
+    else if(quant < 0){ //checks that non-negative quantity isnt entered
+    cout << "Quantity must be greater than 0." << endl;
+    cin >> quant;
+    }
+    else if(quant >=0){
+      validQuant = false; //ends loop
+    }
+    else{
+      cout << "Please use valid input." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> quant;
+    }
+  }
+  return quant;
+
+}
+
+double costCheck(){
+  double cost;
+  cout << "Wholesale Cost: " << endl;
+  cin >> cost;
+  bool validCost = true; //runs until false
+  
+  while (validCost){
+    if (cin.fail()){
+      cout << "Please use valid input." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> cost;
+    }
+    else if(cost < 0){ //makes sure cost is not negative
+    cout << "Cost must be greater than 0." << endl;
+    cin >> cost;
+    }
+    else if(cost >=0){
+      validCost = false; //ends loop
+    }
+    else{
+      cout << "Please use valid input." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> cost;
+    }
+  }
+  return cost; 
+
+}
+
+int idCheck(){
+  int id;
+  
+  cout << "Item ID Number: " << endl;
+  cin >> id;
+  bool validID = true; //runs until false
+  
+  while(validID){
+
+    if(cin.fail()){
+      cout << "Please use valid input." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> id;
+    }
+    else if(id <= 99999 && id > 10000){ //checks that user input id is not negative
+      validID = false;
+      }
+    else{
+      cout << "ID must be 5 digits." << endl;
+      cin.clear();
+      cin.ignore();
+      cin >> id;
+    }
+  }
+
+  return id;
+}
+//program greeting
+void programGreeting(){
+  cout << "Welcome to the Inventory Inquisitor!" << endl;
+  cout << "Down below you will see a menu with many options." << endl;
+  cout << "You can add an item, delete an item, edit an item, or quit." << endl;
+}
+
