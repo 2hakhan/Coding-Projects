@@ -1,0 +1,285 @@
+//pig.cpp
+//Tuaha Khan
+
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <cctype>
+#include <cstdlib>
+
+using namespace std;
+//Function prototype
+int randomNumber(int lo, int hi);
+void menu();
+int D6();
+int rollDice();
+int computerRoll();
+void gameStats(int uturn, int utotal, int cturn, int ctotal, string name);
+
+int main() {
+  string userName; //stores player name
+  int userTurnPoints = 0; //stores turn points for user
+  int userTotal = 0; //stores total points for user
+  int computerTurnPoints = 0; //stores turn points for computer
+  int computerTotal = 0; //stores total points for computer
+  int choice; //gets menu input from user
+  int d; //stores random 1-6 value
+  //High Score on Heap
+  int *highScore = new int; //stores high score
+  const int MAX_SCORE = 100; //value to reach to win
+
+  int min = 2; //min value for randomNumber();
+  int max = 99; //max value for randomNumber();
+  //Fixed Seed
+  srand(1);
+  
+  //Program greeting
+  cout << "Welcome to Pig!\nYou will be playing against a computer.\nYou and the computer will take turns rolling a six-sided-dice.\nIf you roll a 1, you lose your turn and points for that turn.\nFirst to 100 total points wins!\n Name: Tuaha Khan\n Due: January 30, 2022" << endl;
+  cout << "Please enter your full name: " << endl;
+  //Player Name
+  getline(cin,userName);//gets first and last name
+
+  randomNumber(min, max);
+
+  bool userTurn; //checks if its the users turn
+  bool computerTurn; //checks if its the computers turn
+  bool validInput; //checks for 1-3 input
+  bool hasWon = true; //checks if someone has won
+
+  while (hasWon){
+
+    userTurn = true; 
+    
+      while (userTurn){ //it is the players turn
+
+        menu(); //shows user menu
+        cin >> choice;
+
+        validInput = true;
+
+          while (validInput) { //checks if an int of 1-3 has been input
+              //Menu with input validation
+              if(cin.fail()){
+                  cout << "Invalid Input!" << endl;
+
+                  cin.clear();
+                  cin.ignore();
+                  cin >> choice; //reprompts if cin fails
+
+              } 
+            
+              else if (choice == 1) { //user chooses to roll
+                  cout << userName << " rolls." << endl;
+                  d = rollDice(); //gets random int 1-6
+
+                  if (d == 1){ //user rolls 1
+                    cout << userName << " rolled a 1! You lose your turn." << endl;
+
+                    userTurn = false;
+                    userTurnPoints = 0; //takes away points for turn
+
+                  } 
+                
+                  else {//user rolls 2-6
+                    cout << userName << " rolled a " << d << ".\n" << endl;
+
+                    userTurnPoints += d; //adds dice number to turn points
+                  }
+                  validInput = false; //gives turn to computer
+              } 
+            
+              else if (choice == 2) { //user chooses to hold
+                  cout << userName << " holds." << endl << endl;
+
+                  userTotal += userTurnPoints; //adds turn points to total
+                
+                  validInput = false;
+                  userTurn = false; //gives turn to computer
+
+              } 
+            
+              else if (choice == 3) { //user chooses to quit
+                  cout << "Thanks for playing!" << endl;
+                  cout << "High score: " << *highScore << endl; //displays high score
+                  return 0; //exits program
+              } 
+            }
+
+            if (userTotal > computerTotal){ //makes sure user score is higher
+              *highScore = userTotal; //gives high score to user 
+
+            } 
+          
+            else {
+              *highScore = computerTotal; //gives high score to computer
+            }
+
+            gameStats(userTurnPoints, userTotal, computerTurnPoints, computerTotal,userName); 
+          
+            if (userTotal >= MAX_SCORE){ //checks if user has reached 100 total
+              cout << userName << " wins!!! Your high score was: " << *highScore << endl;
+              delete highScore;
+              return 0; 
+            }
+        }
+
+    computerTurn = true; 
+
+      while(computerTurn){ //it is now the computers turn
+
+        d = computerRoll();
+
+        if (d == 1){ //computer chooses to hold
+
+          cout << "The computer has chosen to hold." << endl;
+
+          computerTotal += computerTurnPoints; //adds turn points to total
+          computerTurn = false; //gives turn back to user
+
+          gameStats(userTurnPoints, userTotal, computerTurnPoints, computerTotal, userName);
+          
+        } 
+      
+        else if (d == 2){ //computer chooses to roll
+          cout << "The computer has chosen to roll." << endl;
+
+          d = rollDice();
+
+          if (d == 1){ //computer rolls a 1
+            cout << "The computer rolled a 1! They lose their turn." << endl;
+
+            computerTurn = false; //gives turn back to user
+            computerTurnPoints = 0;
+
+          }
+        
+          else{
+            cout << "The computer rolled a " << d << ".\n" << endl; 
+
+            computerTurnPoints += d; //adds dice number to turn points
+          }
+          gameStats(userTurnPoints, userTotal, computerTurnPoints, computerTotal, userName);
+        } 
+      }
+      if (userTotal > computerTotal){ 
+        *highScore = userTotal; 
+
+      } 
+    
+      else{
+        *highScore = computerTotal;
+      }
+
+      if (computerTotal >= MAX_SCORE){ //checks if computer has reached 100 total
+        //Display High Score
+        cout << "The computer wins!!!\nTheir high score was: "
+        << *highScore << endl; //displays computer high score
+        delete highScore;
+        return 0;
+        
+      }
+
+    }
+
+}
+
+
+int D6(){
+//Creates a random number between 1 and 6
+  return rand() % 6 + 1;
+}
+
+int computerRoll(){
+  //Simulates the computers choice between roll and hold with 1 and 2
+  int d = D6(); //stores random int from D6
+  
+  int computerChoice = 0; //simulates computer choice with 1 or 2
+
+  if (d >= 1 && d <= 3){ //checks if random int is between 1-3
+    computerChoice = 1; //computer chooses to hold
+  } 
+  
+  else if(d >= 4 && d <= 6){ //checks if random int is between 4-6
+    computerChoice = 2; //computer chooses to roll
+  }
+
+  return computerChoice; //returns 1 or 2
+}
+//Numeric Menu
+void menu(){
+//Displays a menu for the user with 3 options
+  cout << "1. Roll" << endl;
+  cout << "2. Hold" << endl;
+  cout << "3. Quit" << endl;
+}
+
+
+int rollDice(){
+//Takes random output from D6 function and assigns points
+  int d = D6();
+  
+  int points = 0;
+
+  switch(d){ //assigngs point values for 2-6
+
+    case 2:
+    points = 2;
+    break;
+
+    case 3:
+    points = 3;
+    break;
+
+    case 4:
+    points = 4;
+    break;
+
+    case 5:
+    points = 5;
+    break;
+
+    case 6:
+    points = 6;
+    break;
+  }
+
+  return points; //returns numbers 2-6
+}
+
+
+int randomNumber(int lo, int hi){
+//returns random int between paramters lo and hi and protects it
+  int num;
+  int min = 1;
+  int max = 100;
+  //Protect RandomNumber() input
+  if (hi > lo && hi <= max){
+    num = (rand() % (hi - lo + 1)) + lo; 
+  } 
+
+  else if(lo >= min){
+    num = (rand() % (hi - lo + 1)) + lo;
+  }
+
+  else{
+    return -1;
+  }
+  //Protect RandomNumber() output
+  if (num > max){
+    return -2; 
+  } 
+  
+  else{
+    return num;
+  }
+
+}
+//Display Turn Stats
+void gameStats(int uturn, int utotal, int cturn, int ctotal, string name){
+//displays the turn stats for every round
+ cout << name << " has " << uturn << " points this turn " << endl;
+ cout << "and " << utotal << " total points.\n" << endl;
+ cout << "The computer has " << cturn << " points this turn " << endl;
+ cout << "and " << ctotal << " total points.\n" << endl;
+
+}
