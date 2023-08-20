@@ -1,0 +1,473 @@
+//todolist.cpp
+//Tuaha Khan
+
+#include <iostream>
+#include <cstdlib>
+#include <cctype>
+#include <ctime>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+class Date{
+  private:
+  int month, //day, month and year values for date class 
+  day,
+  year;
+
+  public: 
+  int displayDay();
+  int displayMonth();
+  int displayYear();
+
+  void componentTest(); //function for tests
+  void setTodaysDate(int, int, int); 
+  void displayDate();
+
+  string displayDTS(); 
+  Date(); 
+
+};
+
+int Date::displayDay(){ //displays day
+  return day;
+}
+
+int Date::displayMonth(){ //displays month
+  return month;
+}
+
+int Date::displayYear(){ //displays year
+  return year;
+}
+
+string Date::displayDTS(){ //displays "Date To String" (converts date to string)
+  string stringDate = to_string(month) + "/" + to_string(day) + "/" + to_string(year);
+  return stringDate;
+}
+
+void Date::displayDate(){
+  cout << month << "/" << day << "/" << year << endl;
+}
+
+void Date::setTodaysDate(int m, int d, int yr){ //allows you to set date
+  day = d;
+  month = m;
+  year = yr;
+}
+
+//System Date
+Date::Date(){
+  time_t ti = time(NULL);
+  tm* currentTime = localtime(&ti);
+  
+  month = (currentTime->tm_mon)+1; 
+  day = (currentTime->tm_mday);
+  year = (currentTime->tm_year)+1900; 
+  
+}
+
+class TodoList {
+  private:
+  Date d; //instance of date class
+  int id; //int for task id
+  int size; 
+  string todo; //string for tasks
+
+  public:
+  void componentTest();
+  void inputID(int i); //allows for id input
+
+  TodoList(const TodoList &obj);
+  TodoList &operator = (const TodoList &right);
+
+  int displayID();
+
+  string displayTodo();
+  string displayDTS();
+
+  void inputDate();
+  void displayDate();
+  void inputTodo(string i);
+  void saveList();
+
+  TodoList(string t, int i);
+
+  TodoList(){ //default constructor for TodoList
+    todo = " ";
+    id = 0;
+    Date d;
+  }
+  
+  friend ostream &operator << (ostream &out, TodoList t);
+  friend istream &operator >> (istream &in, TodoList &t); 
+  
+};
+//Overload «
+ostream &operator << (ostream &out, TodoList t){
+  out << "ID Number: " << t.displayID() << endl;
+  out << "Task: " << t.displayTodo() << endl;
+  out << "Date Added: " << t.displayDTS() << endl;
+
+  return out;
+}
+//Overload »
+istream &operator >> (istream &in, TodoList &t){
+  Date d;
+  int id;
+  string todo;
+
+  cout << "ID Number: " << endl;
+  in >> id;
+  t.inputID(id);
+
+  cout << "Task: " << endl;
+  in >> todo;
+  t.inputTodo(todo);
+  t.inputDate();
+
+  return in;
+}
+//Overload Assignment Operator
+TodoList &TodoList::operator = (const TodoList &r){
+  
+  this->d = r.d; 
+  this->id = r.id;
+  this->todo = r.todo;
+  
+  return *this; //"this" pointer for overloading assignment operator
+}
+//Overload Copy Constructor
+TodoList::TodoList(const TodoList &o){
+  
+  d = o.d;
+  id = o.id;
+  todo = o.todo;
+  
+}
+
+void TodoList::inputDate(){
+  Date();
+}
+
+string TodoList::displayDTS(){
+  return d.displayDTS();
+}
+
+void TodoList::inputID(int i){
+  id = i;
+}
+
+int TodoList::displayID(){
+  return id;
+}
+
+string TodoList::displayTodo(){
+  return todo;
+}
+
+TodoList::TodoList(string t, int i){
+  d = Date();
+  id = i;
+  todo = t;
+}
+
+void TodoList::inputTodo(string i){
+  todo = i;
+}
+
+void Date::componentTest(){ //Date tests and TodoList tests
+  Date t1;
+  t1.setTodaysDate(9, 11, 2007);
+
+  cout << "Test #1" << endl;
+  if(t1.displayDTS() == "9/11/2007"){
+    cout << "Date test passed!" << endl;
+    cout << "Date: " ;
+    t1.displayDate();
+    cout << "\n" << endl;
+  }
+  else{
+    cout << "Date test failed!\n" << endl;
+  }
+
+  Date t2;
+  t2.setTodaysDate(8, 29, 2021);
+
+  cout << "Test #2" << endl;
+  if(t2.displayDTS() == "8/29/2021"){
+    cout << "Date test passed!" << endl;
+    cout << "Date: " ;
+    t2.displayDate();
+    cout << "\n" << endl;
+  }
+  else{
+    cout << "Date test failed!\n" << endl;
+  }
+}
+
+//Test TODO’s
+void TodoList::componentTest(){
+
+  TodoList t1("walk the dog", 1);
+  
+  cout << "Todo Test #1" << endl;
+  if(t1.displayTodo() == "walk the dog"){
+    cout << "Todo test passed!" << endl;
+  }
+  else{
+    cout << "Todo test failed!" << endl;
+  }
+  if(t1.displayID() == 1){
+    cout << "ID test passed!\n" << endl;
+  }
+  else{
+    cout << "ID test failed!\n" << endl;
+  }
+
+  TodoList t2("go to work" , 2);
+
+  cout << "Todo Test #2" << endl;
+  if(t2.displayTodo() == "go to work"){
+    cout << "Todo test passed!" << endl;
+  }
+  else{
+    cout << "Todo test failed!" << endl;
+  }
+  if(t2.displayID() == 2){
+    cout << "ID test passed!\n" << endl;
+  }
+  else{
+    cout << "ID test failed!\n" << endl;
+  }
+
+  TodoList t3("feed the cat", 3);
+
+  cout << "Todo Test #3" << endl;
+  if(t3.displayTodo() == "feed the cat"){
+    cout << "Todo test passed!" << endl;
+  }
+  else{
+    cout << "Todo test failed!" << endl;
+  }
+  if(t3.displayID() == 3){
+    cout << "ID test passed!\n" << endl;
+  }
+  else{
+    cout << "ID test failed!\n" << endl;
+  }
+
+  TodoList t4("walk the dog", 4);
+  
+  cout << "Todo Test #4" << endl;
+  if(t4.displayTodo() == "walk the dog"){
+    cout << "Todo test passed!" << endl;
+  }
+  else{
+    cout << "Todo test failed!" << endl;
+  }
+  if(t4.displayID() == 4){
+    cout << "ID test passed!\n" << endl;
+  }
+  else{
+    cout << "ID test failed!\n" << endl;
+  }
+
+  TodoList t5("take vitamins", 5);
+
+  cout << "Todo Test #5" << endl;
+  if(t5.displayTodo() == "take vitamins"){
+    cout << "Todo test passed!" << endl;
+  }
+  else{
+    cout << "Todo test failed!" << endl;
+  }
+  if(t5.displayID() == 5){
+    cout << "ID test passed!\n" << endl;
+  }
+  else{
+    cout << "ID test failed!\n" << endl;
+  }
+}
+
+void programGreeting();
+void menu();
+void unitTest(Date dTest, TodoList tTest);
+
+int main(){
+
+  ifstream inputFile("Todolist.txt"); //declares txt file for todo list
+  char choice;
+  string todo;
+  int size = 0;
+  int id = 0;
+  string stringID;
+  //TODO array
+  TodoList *tasks = new TodoList[size];
+  TodoList *tempArr = nullptr;
+
+  bool validInput = true; //checks for valid input
+  bool running = true; //checks if loop is running
+
+  Date dTest;
+  TodoList tTest; 
+  TodoList overload; 
+
+  programGreeting();
+
+  //unitTest(dTest, tTest); //calls unitTest which tests date and todo list
+  
+    //cout << "Stream Extraction Test: " << endl; //overloading stream extraction works
+    //cin >> overload;
+
+    //cout << "Stream Insertion Test:" << endl; //overloading stream insertion works
+    //cout << overload;
+    //cout << endl;
+
+while (running) {
+  
+  validInput = true;
+  
+  while(validInput){
+
+      menu();
+      cin >> choice; //allows for user input
+    
+    if (isalpha(choice) != 0)  { //checks that user input is a char
+      
+        cout << "Invalid Input!" << endl;
+      
+        cin.clear();
+        cin.ignore();
+    }
+    
+    else if (choice == '+') {
+
+      getline(cin, todo);
+
+      size++;
+      id++;
+
+      tempArr = new TodoList[size]; //creates a temorary array for tasks
+
+      for (int i = 0; i < size - 1; i++) {
+        tempArr[i] = tasks[i]; //sets values of temp array to task array
+      }
+
+      tempArr[size - 1].inputID(id);
+      tempArr[size - 1].inputTodo(todo);
+      tempArr[size - 1].inputDate(); 
+
+      delete[] tasks; //deletes task array
+      tasks = tempArr; //sets task array to temporary array 
+      tempArr = nullptr; //resets temporary array
+
+      validInput = false;
+
+    } 
+    else if (choice == '-') {
+
+        getline(cin, todo);
+
+              stringID = todo.substr(1, string::npos);
+              
+              for (int i = 0; (unsigned)i < stringID.length(); i++){ 
+                
+                if (isdigit(stringID.at(i)) == 0){ //chekcs that input characters are digits only
+                  cout << "Please enter a valid ID." << endl;
+                  
+                  cin.clear();
+                  cin.ignore();
+                  
+                  validInput = true;
+                  
+                } else {
+                  
+                  validInput = false; //exit loop
+                  
+                }
+              }
+      
+    if (validInput == false){
+      
+      id = stoi(stringID); //converts id string to id int
+           
+      tempArr = new TodoList[size - 1];
+      int j = 0;
+                
+      for (int i = 0; i < size; i++) {
+        
+        if (tasks[i].displayID() != id){
+          
+          tempArr[j] = tasks[i];
+          j++;
+        }  
+      }
+                
+      size--;
+      id++;
+
+      delete[] tasks;
+      tasks = tempArr;
+      tempArr = nullptr;
+
+      }
+    } 
+
+      else if (choice == '?') {
+
+        for (int i = 0; i < size; i++){
+          cout << tasks[i] << endl; //prints out task array
+        }
+      
+        validInput = false;
+      
+        cin.clear();
+        cin.ignore();
+      
+      } 
+    
+      else if (choice == '.') {
+        //Persistence
+        ofstream outputFile;
+        
+        outputFile.open("Todolist.txt"); 
+        
+        for (int i = 0; i < size; i++){
+          
+          outputFile << tasks[i] << endl;
+        }
+        
+        outputFile.close();
+        
+        exit(0); //exits program
+      
+      }
+      
+      else {
+          cout << "Invalid Input!" << endl;
+        
+          cin.clear();
+          cin.ignore(); //checks that input has no digits/unaccepted chars
+        
+      }
+    }
+  }
+}
+
+void menu(){
+  cout << "Add Task (+ 'task name')\nDelete Task (- 'task ID')\nShow Tasks(?)\nQuit (.)" << endl;
+}
+//unitTest method for component tests
+void unitTest(Date dTest, TodoList tTest){
+  dTest.componentTest();
+  tTest.componentTest();
+}
+
+void programGreeting(){
+  cout << "Welcome to the TODO List!" << endl;
+  cout << "Use the menu to add tasks to your list" << endl;
+  cout << "Remember to put a space between the symbol and your task name/ID number.\n" << endl;
+}
