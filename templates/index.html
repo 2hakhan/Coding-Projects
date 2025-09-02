@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title class="text-2xl font-bold mb-4">Image Mood Recommender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body style="background: linear-gradient(to right, #667eea, #764ba2, #f093fb)">
+    <header>   
+    </header>
+    <h1>Upload an Image</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Get Mood + Songs</button>
+    </form>
+
+    {% if mood %}
+        <h2>Mood: {{ mood }}</h2>
+        <img src="{{ image_url }}" alt="Uploaded Image" style="max-width: 300px; margin-top: 10px;">
+        <h3>Recommended Songs:</h3>
+        <ul>
+            {% for song in songs %}
+                <li>{{ song.title }} by {{ song.artist }} — <a href="{{ song.url }}">Listen</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

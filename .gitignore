@@ -1,0 +1,21 @@
+﻿# Python
+__pycache__/
+*.pyc
+.env
+
+# Build/Cache
+.cache/
+.DS_Store
+
+# User uploads (don’t version images)
+static/uploads/
+
+# Node/React
+node_modules/
+frontend/node_modules/
+dist/
+build/
+*.log
+
+# Misc
+*.sqlite
