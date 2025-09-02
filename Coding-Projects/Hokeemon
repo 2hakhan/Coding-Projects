@@ -1,0 +1,318 @@
+//Hokeemon.cpp
+//Tuaha Khan
+
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <ctime>
+#include <cctype>
+
+using namespace std; 
+
+int Time = 0;
+
+//Creature class
+class Creature{
+
+  public:
+  
+  //Virtual Class Creature
+  virtual void play() = 0;
+
+  string name;
+  int hunger;
+  int boredom;
+
+  
+};
+
+
+//Child Class
+class Hokeemon : public Creature{
+  public:
+    int energy;
+    int strength;
+    void componentTest();
+
+    Hokeemon(){
+      hunger = rand() % 5; //sets hunger and boredom to a random number up to 5
+      boredom = rand() % 5;
+    }
+    //Copy Constructor
+    //Design rationale- created new object with same values as object being copied
+    Hokeemon(const Hokeemon &h1){
+      name = h1.name;
+      hunger = h1.hunger;
+      boredom = h1.boredom;
+    }
+    //Overload Assignment Operator
+    void operator = (const Hokeemon &H){
+      hunger = H.hunger;
+      boredom = H.boredom;
+    }
+    //Overload + Operator
+    Hokeemon operator + (const Hokeemon &p){
+      Hokeemon h;
+      h.setHunger(h.displayHunger() + this->displayHunger());
+      h.setBoredom(h.displayBoredom() + this->displayBoredom());
+      return p;
+    }
+    
+
+    void lambda(){
+      auto lam = [](int num){
+        return rand() % num + 1;
+      };
+
+      energy = lam(10);
+      strength = lam(15);
+      
+    }
+
+    void decreaseHunger(int h){
+    hunger -= h; //decrements hunger by 1
+    }
+
+    void increaseBoredom(int b){
+    boredom += b; //increments boredom by 1
+    }
+
+    void play(){
+
+      int randNum1 = (rand() % 8) + 4; 
+      
+      cout << "You play with your Hokeemon! It is now less bored." << endl;
+      
+      boredom = boredom - randNum1; //decreases boredom by random number between 4                                       and 8
+
+     
+    }
+
+    void feed(){
+
+      int randNum2 = (rand() % 6) + 3;
+
+      cout << "You feed your Hokeemon! It is now less hungry." << endl;
+
+        hunger = hunger + randNum2; //increases hunger by random number between 3                                       and 6
+      
+    }
+
+    bool lifeStatus(){
+      if(hunger > 0 && boredom < 20){
+        return true; //Hokeemon is alive if hunger is not 0 and boredom is less than 20
+      }
+      else{
+        return false;
+      }
+    }
+
+
+    void inputName(string n){
+      name = n;
+    }
+
+    string displayName(){ 
+      return name; //returns name string
+    }
+
+    int displayHunger(){
+      return hunger; //returns hunger value
+    }
+
+    int displayBoredom(){
+      return boredom; //returns boredom value
+    }
+
+    void setHunger(const int i){
+      hunger = i;
+    }
+
+    void setBoredom(const int i){
+      boredom = i;
+    }
+
+};
+
+void Hokeemon::componentTest(){ //test method for Hokeemon class
+  
+  Hokeemon H1;
+  Hokeemon H2 = H1;
+
+  cout << "Overload Assignment operator tests: \n" << endl;
+  if(H1.displayHunger() == H2.displayHunger()){
+    cout << "Hunger Test Passed\n" << endl;
+  }
+  else{
+    cout << "Hunger Test Failed\n" << endl;
+  }
+
+  if(H1.displayBoredom()==H2.displayBoredom()){
+    cout << "Boredom Test Passed\n" << endl;
+  }
+  else{
+    cout << "Boredom Test Failed\n" << endl;
+  }
+
+}
+
+
+//Second Child Class
+class Hokreature : public Creature{
+  public: 
+
+  void play(){
+    
+      int randNum1 = (rand() % 8) + 4;
+      
+      cout << "You play with your Hokeemon! It is now less bored." << endl;
+      if(boredom <= randNum1){
+        boredom = 0;
+      }
+      else{
+        boredom = boredom - randNum1;
+      }
+
+    }
+
+  void feed(){
+    
+      int randNum2 = (rand() % 6) + 3;
+
+      cout << "You feed your Hokeemon! It is now less hungry." << endl;
+    
+      hunger = hunger + randNum2;
+      
+    } 
+
+  void trick(){
+    cout << "Your Hokeemon spins around and does a little trick!" << endl;
+  }
+  
+};
+
+Hokeemon hikachu;
+
+//Overload «
+ostream &operator << (ostream &out, const Hokeemon &c){
+      out << "\nYour Hokeemon's stats:" << endl;
+      out << "Hunger: " << hikachu.displayHunger() << endl;
+      out << "Boredom: " << hikachu.displayBoredom() << endl;
+      return out;
+    }
+
+void passTime();
+void menu();
+void programGreeting();
+void menuChoice(char c);
+void unitTest(Hokeemon test);
+void componentTest();
+
+int main(){
+
+  string hokeeName; //string to name hokeemon
+  bool end = false; //checks if loop has stopped
+  Hokeemon test;
+
+  unitTest(test);
+  programGreeting();
+  
+  //Critter Name
+  cin >> hokeeName;
+
+  hikachu.inputName(hokeeName);
+  
+  while(end == false){ //while loop is running
+    char choice; 
+    cout << "(L)isten\n(P)lay\n(F)eed" << endl; 
+
+    cin >> choice; 
+
+    menuChoice(choice); 
+  
+    if(hikachu.lifeStatus() == false){ //if hokeemon is not alive
+         cout << hikachu.displayName() << " has died!" << endl;
+         cout << "Hokeemon status: " << endl;
+         cout << "Hunger: " << hikachu.displayHunger() << endl;
+         cout << "Boredom: " << hikachu.displayBoredom() << endl;
+        cout << "\nGAME OVER!" << endl;
+
+      end = true;
+    }
+  }
+}
+//PassTime() function
+void passTime(){
+  
+  int x = 1; 
+  
+  hikachu.decreaseHunger(x); //decreases hunger and boredom by passed value of 1
+  hikachu.increaseBoredom(x);
+
+  Time++;
+}
+//Alphabetic menu
+void menu(){
+  cout << "(L)isten\n(P)lay\n(F)eed" << endl; 
+}
+
+void programGreeting(){
+
+  //displays current time
+  time_t ti = time(NULL);
+  tm* currentTime = localtime(&ti);
+  
+  int month = (currentTime->tm_mon)+1; 
+  int day = (currentTime->tm_mday);
+  int year = (currentTime->tm_year)+1900;
+  
+  cout << month << "/" << day << "/" << year << endl;
+  
+  cout << "Welcome to Hokeemon!\n" << endl;
+  cout << "This program gives you a Hokeemon creature to take care of." << endl;
+  cout << "You can play with it and feed it, but don't let it get too bored or too hungry!\n" << endl;
+  cout << "Let's give your Hokeemon a name:" << endl;
+}
+
+void menuChoice(char c){
+  
+  Hokeemon h1;
+  
+  if (c == 'L' || c == 'l'){
+    
+      cout << h1 << endl; //displays hokeemon stats
+      passTime();
+    
+    }
+    
+    else if (c == 'P' || c == 'p'){
+      
+      hikachu.play(); //plays with hokeemon
+      passTime();
+      
+    }
+      
+    else if (c == 'F' || c == 'f'){
+      
+      hikachu.feed(); //feeds hokeemon
+      passTime();
+      
+    }
+      
+    
+    else{
+      //Validate Input
+      cout << "Invalid input!" << endl;
+      char d; 
+      
+      cout << "(L)isten\n(P)lay\n(F)eed" << endl;
+      cin >> d; 
+      
+      menuChoice(d); 
+    }
+}
+
+void unitTest(Hokeemon test){
+  test.componentTest();
+}
+
